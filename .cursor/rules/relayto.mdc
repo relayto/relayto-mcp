@@ -1,0 +1,23 @@
+---
+description: How to work with RELAYTO content, the RELAYTO MCP server and sites published on RELAYTO
+globs:
+alwaysApply: true
+---
+
+# RELAYTO
+
+- Public content on a site published with RELAYTO: its MCP server `https://<host>/mcp`
+  (stdio: `npx -y relayto-mcp --site <host>`), its API via `npx relayto … --site <host>`,
+  or `https://<host>/llms.txt` and each page's Markdown (`<page URL>.md`). No account.
+  Content the publisher gated (private, password, email form, unlisted) is left out on
+  purpose; don't try to reach it another way.
+- A RELAYTO workspace the user belongs to: the RELAYTO MCP server,
+  `https://mcp.relayto.com/mcp` (Streamable HTTP, OAuth sign-in). Stdio-only setups:
+  `npx -y relayto-mcp`.
+- Search before creating. Confirm privacy changes, removals, overwrites and invitations
+  before calling the tool.
+- Hub membership tools take ids (`objectID` in search results); settings, privacy,
+  pages and analytics take slugs. Build links with `getUrlBySlug`.
+- Never ask for a RELAYTO password; never write tokens to files.
+
+Full instructions: AGENTS.md and the skills in `skills/`.

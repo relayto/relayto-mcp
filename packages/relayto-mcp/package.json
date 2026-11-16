@@ -1,0 +1,50 @@
+{
+  "name": "relayto-mcp",
+  "version": "1.0.0",
+  "description": "RELAYTO MCP servers for stdio MCP clients: --site <host> reads any site published with RELAYTO (public, no sign-in); without it, connects to RELAYTO's platform server (mcp.relayto.com) with sign-in.",
+  "mcpName": "com.relayto/site-content",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "relayto",
+    "interactive-content",
+    "published-site",
+    "pdf",
+    "hubs",
+    "analytics"
+  ],
+  "homepage": "https://relayto.com",
+  "bugs": {
+    "url": "https://github.com/relayto/relayto-mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/relayto/relayto-mcp.git",
+    "directory": "packages/relayto-mcp"
+  },
+  "license": "MIT",
+  "author": "RELAYTO (https://relayto.com)",
+  "type": "commonjs",
+  "bin": {
+    "relayto-mcp": "bin/relayto-mcp.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20.18.1"
+  },
+  "dependencies": {
+    "mcp-remote": "0.16.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

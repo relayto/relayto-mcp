@@ -1,0 +1,22 @@
+{
+  "name": "relayto-agent-kit",
+  "private": true,
+  "description": "RELAYTO's agent kit: the relayto-mcp and relayto npm packages, the MCP Registry entries, skills, agent rules and plugin manifests.",
+  "type": "module",
+  "workspaces": [
+    "packages/relayto-mcp",
+    "packages/relayto"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace relayto",
+    "test": "npm run build && npm test --workspaces",
+    "validate": "node scripts/validate.mjs",
+    "check": "npm run validate && npm test",
+    "smoke": "npm run build && node scripts/smoke.mjs",
+    "pack:all": "npm pack --workspaces --pack-destination packs"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

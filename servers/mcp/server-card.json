@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  "name": "com.relayto/mcp",
+  "title": "RELAYTO",
+  "description": "Search, create, organize, share and measure interactive content in a RELAYTO workspace.",
+  "version": "1.0.0",
+  "websiteUrl": "https://relayto.com",
+  "icons": [
+    {
+      "src": "https://relayto.com/img/favicons/android-chrome-512x512.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "512x512"
+      ]
+    },
+    {
+      "src": "https://relayto.com/img/favicons/android-chrome-192x192.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "192x192"
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.relayto.com/mcp"
+    }
+  ]
+}

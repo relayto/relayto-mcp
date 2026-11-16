@@ -1,0 +1,17 @@
+{
+  "name": "relayto",
+  "owner": {
+    "name": "RELAYTO",
+    "url": "https://relayto.com"
+  },
+  "metadata": {
+    "description": "RELAYTO's plugin for Claude Code: the RELAYTO MCP server and RELAYTO skills."
+  },
+  "plugins": [
+    {
+      "name": "relayto",
+      "source": "./",
+      "description": "The RELAYTO MCP server plus skills to publish, organize, share and measure RELAYTO content, and to read sites published on RELAYTO."
+    }
+  ]
+}
