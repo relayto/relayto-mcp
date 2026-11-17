@@ -4,6 +4,8 @@ Connect AI agents and developers to [RELAYTO](https://relayto.com), the platform
 turns PDFs, decks, reports and web pages into interactive content, organizes it into
 hubs, publishes it on `*.relayto.com` or your own domain and measures it page by page.
 
+Developer docs: [RELAYTO API, MCP server & SDK](https://relayto.com/hub/api).
+
 This repository has everything an agent needs:
 
 - **Every site published with RELAYTO** serves a public, read-only MCP server at
@@ -166,6 +168,13 @@ npm run smoke        # SDK against benefits.relayto.com (RELAYTO_SMOKE_SITES for
 - The site servers, the site API, `relayto` and `relayto-mcp --site` only ever return
   what a site's visitors can open without signing in.
 - Report security issues to support@relayto.com.
+
+## Links
+
+- Developer docs: https://relayto.com/hub/api
+- MCP server guide: https://relayto.com/explore/relayto-mcp-server
+- Site API guide: https://relayto.com/explore/relayto-site-api
+- SDK and CLI guide: https://relayto.com/explore/relayto-sdk
 
 ## License
 
