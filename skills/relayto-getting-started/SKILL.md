@@ -54,13 +54,17 @@ The workspace is chosen during sign-in and stays active for the session.
    with no arguments.
 3. To switch, call `selectWorkspace` with the workspace `slug` from that list. All later
    calls use the new workspace.
-4. To run one call in another workspace without switching, pass its slug as
-   `workspace`; the workspace tools all accept it.
+4. To run one search, create, edit, hub, privacy, file, form or analytics call in
+   another workspace without switching, pass that workspace's slug as `workspace`.
+   `getUrlBySlug` has no `workspace` argument and builds links for the active
+   workspace, so switch with `selectWorkspace` before building a link to an item in
+   another workspace.
 
 ## Inputs and outputs
 
 - Inputs: which client the user runs, and nothing secret. `selectWorkspace` takes an
-  optional `slug`; `getUrlBySlug` takes `slug` and `itemType` (`content` or `hub`).
+  optional `slug`; `getUrlBySlug` takes only `slug` and `itemType` (`content` or `hub`)
+  and always uses the active workspace.
 - Outputs: once signed in, the client lists the RELAYTO tools. `selectWorkspace` with no
   arguments lists the user's workspaces; with a `slug` it switches. Search tools return
   `objectID`, `slug` and `title` for each match. `getUrlBySlug` returns the shareable
@@ -97,7 +101,8 @@ User: "Set up RELAYTO in Claude Code and show me our most visited contents."
   expired (When a call fails).
 - Your first answer names the active workspace, so the user can catch a wrong one before
   anything is changed.
-- Links come from `getUrlBySlug`, never assembled by hand.
+- Links come from `getUrlBySlug`, never assembled by hand, called while the workspace
+  that holds the item is active.
 - Report only what the tools returned, and report a failed call as failed.
 
 ## When a call fails
