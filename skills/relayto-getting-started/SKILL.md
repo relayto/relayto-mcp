@@ -19,6 +19,16 @@ user.
   their RELAYTO account in the browser and chooses a workspace.
 - Every tool runs as that user, with that user's permissions in the chosen workspace.
 
+## Workflow
+
+1. If RELAYTO tools such as `selectWorkspace` are already listed, the client is
+   connected: go to step 4.
+2. Connect the client (Connect a client).
+3. The user signs in on RELAYTO's page in the browser and picks a workspace. Wait for
+   that; sign-in never happens in the chat.
+4. Confirm the workspace (Pick the workspace) and name it to the user.
+5. Run a read-only first task (First tasks), then use the task skill for the job.
+
 ## Connect a client
 
 Prefer a direct remote connection; fall back to the `relayto-mcp` npm bridge only for
@@ -44,6 +54,17 @@ The workspace is chosen during sign-in and stays active for the session.
    with no arguments.
 3. To switch, call `selectWorkspace` with the workspace `slug` from that list. All later
    calls use the new workspace.
+4. To run one call in another workspace without switching, pass its slug as
+   `workspace`; the workspace tools all accept it.
+
+## Inputs and outputs
+
+- Inputs: which client the user runs, and nothing secret. `selectWorkspace` takes an
+  optional `slug`; `getUrlBySlug` takes `slug` and `itemType` (`content` or `hub`).
+- Outputs: once signed in, the client lists the RELAYTO tools. `selectWorkspace` with no
+  arguments lists the user's workspaces; with a `slug` it switches. Search tools return
+  `objectID`, `slug` and `title` for each match. `getUrlBySlug` returns the shareable
+  link: `/e/<slug>` for a content, `/hub/<slug>` for a hub.
 
 ## First tasks that are safe to try
 
@@ -58,6 +79,26 @@ All of these only read:
 
 For writing, use the task skills in this repository: `relayto-publish-content`,
 `relayto-hubs-and-access` and `relayto-analytics`.
+
+## Example
+
+User: "Set up RELAYTO in Claude Code and show me our most visited contents."
+
+1. Run `claude mcp add --transport http relayto https://mcp.relayto.com/mcp`, then
+   `/mcp`; the user signs in and picks a workspace in the browser.
+2. `selectWorkspace` `{}` → the user's workspaces; tell the user which one is active.
+3. `getWorkspaceAnalytics` `{"orderBy": "visits", "limit": "5"}` → the five most visited
+   contents with slug, title and visits.
+4. `getUrlBySlug` `{"slug": "<slug>", "itemType": "content"}` for each → their links.
+
+## Validation
+
+- The RELAYTO tools are listed after sign-in. A 401 means sign-in did not finish or has
+  expired (When a call fails).
+- Your first answer names the active workspace, so the user can catch a wrong one before
+  anything is changed.
+- Links come from `getUrlBySlug`, never assembled by hand.
+- Report only what the tools returned, and report a failed call as failed.
 
 ## When a call fails
 
