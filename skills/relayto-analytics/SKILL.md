@@ -13,7 +13,18 @@ Read-only. Needs the RELAYTO MCP server (see `relayto-getting-started`). The num
 are the same as the Analytics tabs in the RELAYTO app. The content's own team and
 RELAYTO staff are left out, and times are in seconds.
 
-## Pick the tool
+## Workflow
+
+1. Work out what to measure (one content, one hub with everything in it, or the whole
+   workspace) and the period. Content and hub reports default to the last 30 days; the
+   workspace ranking is all time.
+2. Find the slug with `searchContents` (title words), `searchContentsWithAI` (topic) or
+   `searchHubs`. If several match, ask which one, or say which one you picked.
+3. Call the tool and the `report` that answer the question (Inputs). To compare periods,
+   call the same report again with the other dates.
+4. Write the answer (Writing the answer), then check it (Validation).
+
+## Inputs
 
 | Question | Tool | Inputs |
 | --- | --- | --- |
@@ -21,9 +32,10 @@ RELAYTO staff are left out, and times are in seconds.
 | "How did this deck do last month?" | `getContentAnalytics` | content `slug`, `report`, `date_from`, `date_to` (YYYY-MM-DD; default last 30 days) |
 | "How is the investor hub doing?" | `getHubAnalytics` | hub `slug`, `report`, dates |
 
-Find slugs first with `searchContents`, `searchContentsWithAI` or `searchHubs`.
+## Outputs
 
-## Reports
+`getWorkspaceAnalytics`: one row per content, highest first, with its id, slug and title,
+visits, pageViews, interactions, avgTimeSpent and sumTimeSpent.
 
 `getContentAnalytics` `report`:
 
@@ -52,7 +64,30 @@ Find slugs first with `searchContents`, `searchContentsWithAI` or `searchHubs`.
    period if you fetched it). Don't speculate past the data.
 3. Convert seconds to minutes for people. Say when a number is zero or too small to
    read much into.
-4. To compare periods, call the same report twice with different dates.
+
+## Example
+
+User: "How did Product Overview do in October, and which pages did people read?"
+
+1. `searchContents` `{"q": "Product Overview"}` → the match's `objectID`, `slug` and
+   `title`.
+2. `getContentAnalytics` `{"slug": "<slug>", "report": "overview", "date_from":
+   "2026-10-01", "date_to": "2026-10-31"}` → visitors, visits, page_views and time.
+3. The same call with `"report": "pages"` → views and time for each page.
+4. Answer with the period, the overview numbers, the most read pages and the time in
+   minutes, all taken from those two results.
+
+## Validation
+
+- The period you state is the `date_from` to `date_to` you sent, or the default last 30
+  days. Workspace rankings are all time; don't present them as a period.
+- The content or hub is the one the user meant: its title matches the search result the
+  slug came from.
+- Every number in the answer comes from a tool result. Label totals or averages you
+  worked out yourself; hub `contents` rows can add up to less than the hub total.
+- Seconds were converted before you wrote minutes.
+- A zero or empty result is an answer: say so, and don't widen the dates without telling
+  the user.
 
 ## Visitor data is personal data
 

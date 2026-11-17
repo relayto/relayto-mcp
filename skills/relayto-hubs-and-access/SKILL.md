@@ -13,6 +13,15 @@ A hub is a collection of contents and other hubs, with its own page
 (`/hub/<slug>`), navigation, cover and analytics. Needs the RELAYTO MCP server (see
 `relayto-getting-started`).
 
+## Workflow
+
+1. Find what exists (below), so you reuse a hub instead of making a second one.
+2. Collect what the tools need: hubs by `slug`, contents and sub-hubs to add, remove or
+   rename by id (`objectID` in search results, the item id in `getHubItems`).
+3. For privacy changes, removals and invitations, state the change and get a clear yes.
+4. Make the change: Build a hub, Decide who can open it, Invite people.
+5. Check the result (Validation) and give the user the hub link from `getUrlBySlug`.
+
 ## Find what exists
 
 - `searchHubs` (`q`) finds hubs by keyword and returns their slugs.
@@ -74,3 +83,39 @@ Rules:
 asks for more), and optionally `text` (a message) and `sendEmail`. With `sendEmail`
 true, RELAYTO emails each address. Only invite addresses the user gave you, and confirm
 the list and role first.
+
+## Inputs and outputs
+
+- Inputs: hub slugs from `searchHubs`; content and hub ids from search results or
+  `getHubItems`; content slugs for `updateContentPrivacy`; the emails and role the user
+  confirmed for `addUsersToHub`.
+- Outputs: search tools return `objectID`, `slug` and `title` for each match;
+  `getHubItems` returns the hub's items with their ids, one page at a time; write tools
+  return the server's confirmation, and `updateContentPrivacy` lists what it could not
+  change under `skipped`; `getUrlBySlug` returns the hub link.
+
+## Example
+
+User: "Create a hub called Q3 Sales Kit with Product Overview and Pricing Guide, and make
+it unlisted."
+
+1. `searchHubs` `{"q": "Q3 Sales Kit"}` → no match, so a new hub is needed.
+2. `searchContents` `{"q": "Product Overview"}` and `{"q": "Pricing Guide"}` → each
+   content's `objectID`.
+3. `createNewHub` `{"title": "Q3 Sales Kit"}` → the new hub and its slug.
+4. `addMultipleContentsInToHub` `{"slug": "<hub slug>", "contentIds": ["<id 1>",
+   "<id 2>"]}`.
+5. Ask "Make Q3 Sales Kit unlisted, so only people with the link can open it?"; after a
+   yes, `updateHubPrivacy` `{"slug": "<hub slug>", "type": "unlisted"}`.
+6. `getHubItems` on the hub → both contents are in it. `getUrlBySlug` `{"slug":
+   "<hub slug>", "itemType": "hub"}` → the link to share.
+
+## Validation
+
+- After adding, removing, renaming or reordering, list the hub again with `getHubItems`
+  and check that the items and their order are what the user asked for.
+- After a privacy change, name every `skipped` content and the reason; never report it
+  as changed.
+- The hub link comes from `getUrlBySlug` with `itemType: "hub"`; an `/e/` link to a hub
+  does not open it.
+- Invitations went only to the addresses and role the user confirmed.

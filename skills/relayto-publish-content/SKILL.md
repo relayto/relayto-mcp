@@ -12,6 +12,17 @@ metadata:
 Needs the RELAYTO MCP server (see `relayto-getting-started`). All calls act in the
 active workspace as the signed-in user.
 
+## Workflow
+
+1. Confirm the target workspace (`selectWorkspace` with no arguments) when the user
+   works in several.
+2. Search first (`searchContents`) so you update the existing content instead of
+   creating a duplicate.
+3. Create the content (Create content) or change it (Edit content). Host the files a
+   page links to (Workspace files) and add a form (Forms) when the page needs them.
+4. Put it in a hub and set who can open it, if the user said so.
+5. Check the result (Validation) and report it with its link.
+
 ## Create content
 
 Pick the tool by what the user has:
@@ -77,11 +88,38 @@ Collect only the fields the user asked for. Do not add fields for sensitive data
 (government IDs, card numbers, health details) unless the user insists and understands
 where it goes.
 
-## Before you write
+## Inputs and outputs
 
-- Confirm the target workspace (`selectWorkspace` with no arguments) when the user
-  works in several.
-- Search first (`searchContents`) so you update the existing content instead of
-  creating a duplicate.
-- Report what you created or changed with its link. Never claim a change you did not
-  get a success response for.
+- Inputs: what the user has (a public PDF or page URL, HTML, a post's title and body, a
+  file), the slug of a content to edit (from `searchContents`), and the hub slug if it
+  goes in a hub.
+- Outputs: the create tools return the new content with its slug; `getUrlBySlug` turns
+  it into the `/e/<slug>` link. `uploadWorkspaceFile` returns the file's final `path`
+  and public `url`. `createForm` returns `connect` (`endpoint`, `jsonExample`,
+  `helperSnippet`, `aiPrompt`). `updateContentPages` lists pages that matched nothing
+  under `skippedPages`.
+
+## Example
+
+User: "Turn our 2025 annual report PDF into an interactive RELAYTO content and put it in
+the Investors hub", with a link to the PDF.
+
+1. `searchContents` `{"q": "annual report 2025"}` → no existing content to update.
+2. `searchHubs` `{"q": "Investors"}` → the hub's slug.
+3. `createContentByPdfUrl` `{"url": "<the PDF link the user gave>",
+   "aiDetailsProcessing": "true", "hubSlug": "<hub slug>"}` → the new content's slug.
+4. `getUrlBySlug` `{"slug": "<new slug>", "itemType": "content"}` → its link.
+5. Reply with the link and the hub, and say a long PDF can take a few minutes before
+   every page is interactive.
+
+## Validation
+
+- Report only what the server confirmed. Name anything under `skipped` or
+  `skippedPages`, and treat a 409 or a `conflict` as not done.
+- Build links with `getUrlBySlug` from the slug the create call returned. If a create
+  call failed or timed out, search for the title before trying again, so you don't make
+  a duplicate.
+- After uploading, use the `url` the upload returned: the stored path can differ from
+  the one you sent (spaces become `-`).
+- Before overwriting or deleting a workspace file, `getWorkspaceFileUsage` shows the
+  contents that link it; tell the user which.
