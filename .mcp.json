@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "relayto": {
-      "type": "http",
-      "url": "https://mcp.relayto.com/mcp"
-    }
-  }
-}

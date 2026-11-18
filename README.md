@@ -1,4 +1,4 @@
-# RELAYTO MCP servers, SDK, CLI, skills and agent plugin
+# RELAYTO MCP servers, SDK and CLI
 
 Connect AI agents and developers to [RELAYTO](https://relayto.com), the platform that
 turns PDFs, decks, reports and web pages into interactive content, organizes it into
@@ -6,7 +6,7 @@ hubs, publishes it on `*.relayto.com` or your own domain and measures it page by
 
 Developer docs: [RELAYTO API, MCP server & SDK](https://relayto.com/hub/api).
 
-This repository has everything an agent needs:
+This repository has the servers' entries and the packages agents connect with:
 
 - **Every site published with RELAYTO** serves a public, read-only MCP server at
   `https://<site>/mcp` and a REST API at `https://<site>/api/site/v1`, with no sign-in.
@@ -17,11 +17,10 @@ This repository has everything an agent needs:
   start local servers (`npx -y relayto-mcp --site <host>`, or `npx -y relayto-mcp`).
 - **[`relayto`](packages/relayto) on npm**: the SDK and CLI for the site API
   (`npx relayto search "<query>" --site <host>`).
-- **Agent Skills** for the common RELAYTO jobs.
-- **An Agent Plugin** (`plugin.json` + `mcp.json`) that bundles the platform server and
-  the skills, also packaged for Claude Code (`.claude-plugin/`).
-- **Agent rules** for coding tools: [AGENTS.md](AGENTS.md), `.claude/CLAUDE.md`,
-  `.cursor/rules/`, `.windsurf/rules/`, `.github/copilot-instructions.md`.
+
+The Agent Skills, the RELAYTO plugin (for Claude Code, ChatGPT and other Agent Plugin
+clients) and the agent rules for coding tools live in
+[relayto/agent-skills](https://github.com/relayto/agent-skills).
 
 ## Read any site published with RELAYTO
 
@@ -117,25 +116,14 @@ claude mcp add --transport http relayto https://mcp.relayto.com/mcp
 
 The first connection opens RELAYTO's sign-in page in your browser.
 
-## Skills
+## Skills and plugin
+
+The skills, the plugin that bundles them with the platform server, and the agent rules
+are in [relayto/agent-skills](https://github.com/relayto/agent-skills):
 
 ```sh
-npx skills add relayto/relayto-mcp
+npx skills add relayto/agent-skills
 ```
-
-In Claude Code, install the server and the skills together as a plugin:
-
-```
-/plugin install relayto --marketplace relayto/relayto-mcp
-```
-
-| Skill | What it teaches an agent |
-| --- | --- |
-| [relayto-getting-started](skills/relayto-getting-started/SKILL.md) | Connect a client, pick the workspace, fix sign-in and permission errors |
-| [relayto-read-published-site](skills/relayto-read-published-site/SKILL.md) | Read and cite any site published on RELAYTO through its MCP server, API, llms.txt and Markdown, no account needed |
-| [relayto-publish-content](skills/relayto-publish-content/SKILL.md) | Create content from a PDF, link, HTML or post; edit pages and settings; workspace files; forms |
-| [relayto-hubs-and-access](skills/relayto-hubs-and-access/SKILL.md) | Build and arrange hubs, set privacy, invite people |
-| [relayto-analytics](skills/relayto-analytics/SKILL.md) | Read and report content, hub and workspace analytics |
 
 ## Repository layout
 
@@ -146,8 +134,6 @@ In Claude Code, install the server and the skills together as a plugin:
 | `servers/site-content/server.json` | MCP Registry entry `com.relayto/site-content`: every site's server (`https://{site}/mcp`) and the `relayto-mcp` package with `--site` |
 | `packages/relayto-mcp/` | npm `relayto-mcp`: stdio bridge (`--site`: built in, no dependencies; sign-in mode: mcp-remote) |
 | `packages/relayto/` | npm `relayto`: TypeScript SDK and CLI for the site API, no runtime dependencies |
-| `skills/` | Agent Skills |
-| `plugin.json`, `mcp.json`, `.claude-plugin/`, `.mcp.json` | Agent Plugin manifests |
 | `scripts/validate.mjs` | Checks every manifest against its schema and the files against each other |
 | `scripts/smoke.mjs` | Smoke test of the SDK against live sites |
 

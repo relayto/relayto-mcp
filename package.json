@@ -1,7 +1,7 @@
 {
   "name": "relayto-agent-kit",
   "private": true,
-  "description": "RELAYTO's agent kit: the relayto-mcp and relayto npm packages, the MCP Registry entries, skills, agent rules and plugin manifests.",
+  "description": "RELAYTO's MCP Registry entries and the relayto-mcp and relayto npm packages. Skills, agent rules and plugin manifests: relayto/agent-skills.",
   "type": "module",
   "workspaces": [
     "packages/relayto-mcp",

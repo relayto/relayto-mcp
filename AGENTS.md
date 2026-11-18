@@ -22,7 +22,7 @@ company's own domain, and measures them page by page.
    `https://mcp.relayto.com/mcp` (Streamable HTTP, OAuth sign-in with the user's
    RELAYTO account). It can search, create and edit contents, build hubs, set privacy,
    invite people, host files, create forms and read analytics, always as the signed-in
-   user. Details: `relayto-getting-started` and the task skills below.
+   user. Skills for these jobs: [relayto/agent-skills](https://github.com/relayto/agent-skills).
 
 ## Connect the MCP server
 
@@ -41,18 +41,10 @@ claude mcp add --transport http relayto https://mcp.relayto.com/mcp
 { "mcpServers": { "relayto": { "command": "npx", "args": ["-y", "relayto-mcp"] } } }
 ```
 
-## Skills in this repository
+## Skills, plugin and agent rules
 
-| Skill | Use it to |
-| --- | --- |
-| `skills/relayto-getting-started` | connect a client, pick the workspace, fix auth errors |
-| `skills/relayto-read-published-site` | read and cite a RELAYTO-published site without an account |
-| `skills/relayto-publish-content` | create content from a PDF, link, HTML or post; edit pages and settings; files; forms |
-| `skills/relayto-hubs-and-access` | build and arrange hubs, set privacy, invite people |
-| `skills/relayto-analytics` | read and report content, hub and workspace analytics |
-
-Install them with `npx skills add relayto/relayto-mcp`, or load the whole repository as
-an Agent Plugin (`plugin.json`, `mcp.json`).
+They live in [relayto/agent-skills](https://github.com/relayto/agent-skills):
+`npx skills add relayto/agent-skills`, or the `relayto` plugin there.
 
 ## Rules that keep agents out of trouble
 
@@ -72,12 +64,6 @@ an Agent Plugin (`plugin.json`, `mcp.json`).
 
 Layout:
 
-- `skills/<name>/SKILL.md`: Agent Skills (https://agentskills.io/specification). The
-  `name` in the frontmatter must equal the folder name; keep `description` under 1024
-  characters and say when to use the skill.
-- `plugin.json` + `mcp.json`: the Agent Plugins manifest
-  (https://agent-plugins.org/specification). `extensions.com.openai` holds the ChatGPT
-  directory listing.
 - `servers/mcp/server.json`: the official MCP Registry entry `com.relayto/mcp`, the
   platform server, remote only.
 - `servers/mcp/server-card.json`: its server card, served by the RELAYTO MCP server at
@@ -90,18 +76,15 @@ Layout:
 - `packages/relayto/`: the `relayto` npm package, the TypeScript SDK and CLI for the
   site API, with no runtime dependencies.
 - `test-fixtures/site-hosts.json`: the `--site` rules both packages must agree on.
-- `.claude-plugin/` + `.mcp.json`: the same plugin in Claude Code's format, and its
-  marketplace entry.
-- `.claude/CLAUDE.md`, `.cursor/rules/`, `.windsurf/rules/`,
-  `.github/copilot-instructions.md`: short versions of this file for each tool.
+- `.claude/CLAUDE.md`: points Claude Code at this file. The skills, the plugin and the
+  agent rules for other tools are in relayto/agent-skills.
 
 When you change something:
 
 - A registry version can't be republished, so bump `version` for every metadata change:
   `servers/site-content/server.json` together with `packages/relayto-mcp` (its
   `packages[0].version` too); `servers/mcp/server.json` together with
-  `server-card.json`, `plugin.json` and `.claude-plugin/plugin.json`. `relayto` has its
-  own version.
+  `server-card.json`. `relayto` has its own version.
 - Keep `description` in both `server.json` files and the card at 100 characters or
   fewer.
 - Describe tools only as the live server behaves. Check the tool list
