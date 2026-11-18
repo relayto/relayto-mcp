@@ -89,7 +89,8 @@ invalid `--site`). Only MCP messages are written to stdout; diagnostics go to st
 ## Links
 
 - RELAYTO: https://relayto.com
-- Source, skills, agent rules and plugin: https://github.com/relayto/relayto-mcp
+- Source: https://github.com/relayto/relayto-mcp
+- Skills, agent rules and plugin: https://github.com/relayto/agent-skills
 - MCP Registry: `com.relayto/site-content` (this package) and `com.relayto/mcp`
 
 ## License

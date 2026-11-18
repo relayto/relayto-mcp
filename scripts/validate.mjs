@@ -3,15 +3,12 @@
 //   servers/*/server.json   official MCP Registry schema (2025-12-11) + registry rules,
 //                           including the npm mcpName arrangement between the entries
 //   servers/mcp/server-card.json   MCP Server Card schema (v1, ext-server-card)
-//   plugin.json        Agent Plugins 1.0.0 manifest schema + ChatGPT directory limits
-//   mcp.json           Agent Plugins 1.0.0 MCP schema
-//   skills/*/SKILL.md  Agent Skills frontmatter rules
 //   packages/*/package.json   what the registry and ora need from the two npm packages
 // and that the files agree with each other. Exits non-zero on any problem.
 //
 // Usage: npm install && node scripts/validate.mjs
 
-import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -56,11 +53,6 @@ const isHttps = (u) => {
   }
 };
 
-function pngSize(file) {
-  const b = readFileSync(file);
-  if (b.length < 24 || b.toString('ascii', 1, 4) !== 'PNG') return null;
-  return { width: b.readUInt32BE(16), height: b.readUInt32BE(20) };
-}
 
 // ---- servers/*/server.json (MCP Registry) -----------------------------------
 // The registry schema file wraps ServerDetail; validate against that definition.
@@ -105,7 +97,7 @@ for (const [key, entry] of Object.entries(ENTRIES)) {
   ok(`${where} is ${server.name}, valid against the registry schema and rules`);
 }
 
-// repository: this repo holds the bridge and SDK packages, the skills and the entries,
+// repository: this repo holds the bridge and SDK packages and the entries,
 // not either server's source (rt-mcp-proxy and the backend are private). So only what
 // is built from this repo points at it: the npm packages, and the site-content entry's
 // package (the registry schema has no per-package repository, so the entry's own
@@ -210,118 +202,6 @@ const sdkBin = sdk.bin?.relayto;
 if (typeof sdkBin !== 'string' || !existsSync(join(root, sdkDir, 'src', sdkBin.replace(/^dist\//, '').replace(/\.js$/, '.ts')))) fail(`${sdkDir}/package.json`, `bin ${sdkBin} has no source in src/`);
 if (sdk.keywords?.includes('mcp')) fail(`${sdkDir}/package.json`, 'the SDK is not an MCP server; keep "mcp" out of its keywords');
 ok('relayto: ESM, typed, no runtime dependencies, builds on pack');
-
-// ---- plugin.json + mcp.json (Agent Plugins, ChatGPT directory) -------------
-const plugin = readJson('plugin.json');
-check('plugin.json', plugin, schema('agent-plugins-plugin.schema.1.0.0.json'));
-const mcp = readJson('mcp.json');
-check('mcp.json', mcp, schema('agent-plugins-mcp.schema.1.0.0.json'));
-if (plugin.version !== platform.version) fail('plugin.json', `version ${plugin.version} != servers/mcp/server.json ${platform.version}`);
-const claudePlugin = readJson('.claude-plugin/plugin.json');
-if (claudePlugin.version !== platform.version) fail('.claude-plugin/plugin.json', `version ${claudePlugin.version} != servers/mcp/server.json ${platform.version}`);
-if (claudePlugin.name !== plugin.name) fail('.claude-plugin/plugin.json', `name ${claudePlugin.name} != plugin.json ${plugin.name}`);
-// Homepages: one RELAYTO address everywhere, the entries' websiteUrl (relayto.com/mcp
-// is not a page today).
-for (const [where, manifest] of [['plugin.json', plugin], ['.claude-plugin/plugin.json', claudePlugin]]) {
-  if (manifest.homepage !== platform.websiteUrl) fail(where, `homepage ${manifest.homepage} != ${platform.websiteUrl} (servers/mcp/server.json websiteUrl)`);
-}
-const claudeMcp = readJson('.mcp.json');
-for (const remote of platform.remotes) {
-  if (!Object.values(claudeMcp.mcpServers).some((s) => s.url === remote.url)) fail('.mcp.json', `does not list ${remote.url}`);
-}
-const mcpUrls = Object.values(mcp.mcpServers).map((s) => s.url);
-for (const remote of platform.remotes) if (!mcpUrls.includes(remote.url)) fail('mcp.json', `does not list ${remote.url}`);
-
-const openai = plugin.extensions?.['com.openai'];
-if (openai) {
-  const ui = openai.interface || {};
-  const limits = { displayName: 30, shortDescription: 30, longDescription: 4000, developerName: 80 };
-  for (const [key, max] of Object.entries(limits)) {
-    if (!ui[key]) fail('plugin.json', `com.openai.interface.${key} is required`);
-    else if (ui[key].length > max) fail('plugin.json', `com.openai.interface.${key} is over ${max} characters`);
-  }
-  if (/\b(mcp|plugin)\b/i.test(ui.displayName || '')) fail('plugin.json', 'displayName must not append "MCP" or "Plugin"');
-  const prompts = [].concat(ui.defaultPrompt || []);
-  if (prompts.length > 3) fail('plugin.json', 'more than 3 defaultPrompt entries');
-  for (const p of prompts) if (p.length > 128 || p.includes('@')) fail('plugin.json', `defaultPrompt "${p}" is too long or has an @mention`);
-  for (const c of ui.capabilities || []) if (c.length > 120) fail('plugin.json', `capability "${c}" is over 120 characters`);
-  if ((ui.capabilities || []).length > 20) fail('plugin.json', 'more than 20 capabilities');
-  for (const key of ['websiteURL', 'supportURL', 'privacyPolicyURL', 'termsOfServiceURL']) {
-    if (ui[key] !== undefined && !isHttps(ui[key])) fail('plugin.json', `${key} must be https`);
-  }
-  for (const key of ['brandColor', 'brandColorDark']) {
-    if (ui[key] !== undefined && !/^#[0-9A-Fa-f]{6}$/.test(ui[key])) fail('plugin.json', `${key} must be #RRGGBB`);
-  }
-  for (const key of ['logo', 'logoDark', 'composerIcon', 'composerIconDark']) {
-    if (ui[key] === undefined) continue;
-    if (!ui[key].startsWith('./')) fail('plugin.json', `${key} must be a ./ path`);
-    const file = join(root, ui[key]);
-    if (!existsSync(file)) {
-      fail('plugin.json', `${key} file ${ui[key]} is missing`);
-      continue;
-    }
-    const size = pngSize(file);
-    if (!size || size.width !== size.height || size.width < 48 || size.width > 4096) fail('plugin.json', `${key} must be a square PNG between 48 and 4096 px`);
-    if (statSync(file).size > 5 * 1024 * 1024) fail('plugin.json', `${key} is over 5 MiB`);
-  }
-  if (openai.onboardingSkill && !existsSync(join(root, openai.onboardingSkill))) fail('plugin.json', `onboardingSkill ${openai.onboardingSkill} is missing`);
-  const cases = openai.review?.test_cases;
-  if (cases) {
-    if ((cases.positive || []).length !== 5) fail('plugin.json', 'ChatGPT review needs exactly five positive test cases');
-    if ((cases.negative || []).length !== 3) fail('plugin.json', 'ChatGPT review needs exactly three negative test cases');
-  }
-  ok('plugin.json com.openai listing is within the ChatGPT directory limits');
-}
-
-// ---- skills ----------------------------------------------------------------
-function frontmatter(text) {
-  const m = text.match(/^---\n([\s\S]*?)\n---\n/);
-  if (!m) return null;
-  const out = {};
-  let parent = null;
-  for (const line of m[1].split('\n')) {
-    if (!line.trim()) continue;
-    const nested = line.match(/^ {2}([A-Za-z0-9_-]+):\s*(.*)$/);
-    const top = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (nested && parent) out[parent][nested[1]] = nested[2];
-    else if (top) {
-      if (top[2] === '') {
-        parent = top[1];
-        out[parent] = {};
-      } else {
-        parent = null;
-        out[top[1]] = top[2];
-      }
-    } else return { __error: `cannot parse line "${line}"` };
-  }
-  return out;
-}
-
-const skillDirs = readdirSync(join(root, 'skills'), { withFileTypes: true }).filter((d) => d.isDirectory());
-const allowed = new Set(['name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools']);
-for (const dir of skillDirs) {
-  const where = `skills/${dir.name}/SKILL.md`;
-  const file = join(root, where);
-  if (!existsSync(file)) {
-    fail(where, 'missing');
-    continue;
-  }
-  const fm = frontmatter(readFileSync(file, 'utf8'));
-  if (!fm) {
-    fail(where, 'no YAML frontmatter');
-    continue;
-  }
-  if (fm.__error) fail(where, fm.__error);
-  for (const key of Object.keys(fm)) if (!allowed.has(key)) fail(where, `unknown frontmatter field ${key}`);
-  const name = fm.name || '';
-  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name) || name.length > 64) fail(where, `name "${name}" breaks the Agent Skills name rules`);
-  if (name !== dir.name) fail(where, `name "${name}" != folder "${dir.name}"`);
-  const description = fm.description || '';
-  if (!description || description.length > 1024) fail(where, `description must be 1-1024 characters (has ${description.length})`);
-  if (fm.compatibility && fm.compatibility.length > 500) fail(where, 'compatibility is over 500 characters');
-  if (fm.metadata?.homepage && fm.metadata.homepage !== platform.websiteUrl) fail(where, `metadata.homepage ${fm.metadata.homepage} != ${platform.websiteUrl}`);
-}
-ok(`${skillDirs.length} skills checked against the Agent Skills frontmatter rules`);
 
 // ---- report ----------------------------------------------------------------
 for (const line of passed) console.log(`ok   ${line}`);

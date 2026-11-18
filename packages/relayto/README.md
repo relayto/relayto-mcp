@@ -138,7 +138,8 @@ clients that only start local servers: `npx -y relayto-mcp --site <host>`
 ## Links
 
 - RELAYTO: https://relayto.com
-- Source, issues, the MCP bridge and agent skills: https://github.com/relayto/relayto-mcp
+- Source, issues and the MCP bridge: https://github.com/relayto/relayto-mcp
+- Agent skills: https://github.com/relayto/agent-skills
 - A site's API reference: `https://<site>/developers`
 
 ## License
