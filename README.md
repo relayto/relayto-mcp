@@ -17,7 +17,7 @@ This repository has everything an agent needs:
   start local servers (`npx -y relayto-mcp --site <host>`, or `npx -y relayto-mcp`).
 - **[`relayto`](packages/relayto) on npm**: the SDK and CLI for the site API
   (`npx relayto search "<query>" --site <host>`).
-- **Agent Skills** for the common RELAYTO jobs.
+- **Agent Skills** for building RELAYTO web pages and reading sites published on RELAYTO.
 - **An Agent Plugin** (`plugin.json` + `mcp.json`) that bundles the platform server and
   the skills, also packaged for Claude Code (`.claude-plugin/`).
 - **Agent rules** for coding tools: [AGENTS.md](AGENTS.md), `.claude/CLAUDE.md`,
@@ -131,11 +131,13 @@ In Claude Code, install the server and the skills together as a plugin:
 
 | Skill | What it teaches an agent |
 | --- | --- |
-| [relayto-getting-started](skills/relayto-getting-started/SKILL.md) | Connect a client, pick the workspace, fix sign-in and permission errors |
+| [relayto-web-content](skills/relayto-web-content/SKILL.md) | Build a hand-made HTML page and publish it to RELAYTO: assets in Workspace Files, the viewer's rules, links that open a document on a page, a thumbnail, checks |
+| [relayto-web-components](skills/relayto-web-components/SKILL.md) | Make that page editable in RELAYTO's web-content editor: the component schema, field markers, a page script that works with the editor, and a validator |
 | [relayto-read-published-site](skills/relayto-read-published-site/SKILL.md) | Read and cite any site published on RELAYTO through its MCP server, API, llms.txt and Markdown, no account needed |
-| [relayto-publish-content](skills/relayto-publish-content/SKILL.md) | Create content from a PDF, link, HTML or post; edit pages and settings; workspace files; forms |
-| [relayto-hubs-and-access](skills/relayto-hubs-and-access/SKILL.md) | Build and arrange hubs, set privacy, invite people |
-| [relayto-analytics](skills/relayto-analytics/SKILL.md) | Read and report content, hub and workspace analytics |
+
+The web-page skills need the platform MCP server (`https://mcp.relayto.com/mcp`, see
+[AGENTS.md](AGENTS.md#connect-the-mcp-server)) and admin rights in the workspace, since
+Workspace Files uploads are admin-only.
 
 ## Repository layout
 

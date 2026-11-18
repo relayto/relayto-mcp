@@ -11,7 +11,7 @@
     {
       "name": "relayto",
       "source": "./",
-      "description": "The RELAYTO MCP server plus skills to publish, organize, share and measure RELAYTO content, and to read sites published on RELAYTO."
+      "description": "The RELAYTO MCP server plus skills to build web pages for RELAYTO and to read sites published on RELAYTO."
     }
   ]
 }

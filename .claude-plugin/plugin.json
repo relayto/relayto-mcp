@@ -1,7 +1,7 @@
 {
   "name": "relayto",
   "version": "1.0.0",
-  "description": "The RELAYTO MCP server plus skills to publish PDFs and web pages as interactive content, organize hubs, control access, read analytics, and read any site published on RELAYTO.",
+  "description": "The RELAYTO MCP server plus skills to build web pages for RELAYTO (editable in its web-content editor, published through the server) and to read any site published on RELAYTO.",
   "author": {
     "name": "RELAYTO",
     "url": "https://relayto.com"

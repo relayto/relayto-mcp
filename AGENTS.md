@@ -22,7 +22,7 @@ company's own domain, and measures them page by page.
    `https://mcp.relayto.com/mcp` (Streamable HTTP, OAuth sign-in with the user's
    RELAYTO account). It can search, create and edit contents, build hubs, set privacy,
    invite people, host files, create forms and read analytics, always as the signed-in
-   user. Details: `relayto-getting-started` and the task skills below.
+   user. Connect it as below; the web-page skills below build on it.
 
 ## Connect the MCP server
 
@@ -45,11 +45,9 @@ claude mcp add --transport http relayto https://mcp.relayto.com/mcp
 
 | Skill | Use it to |
 | --- | --- |
-| `skills/relayto-getting-started` | connect a client, pick the workspace, fix auth errors |
+| `skills/relayto-web-content` | build a hand-made HTML page and publish it to RELAYTO: Workspace Files, the viewer's rules, document links, thumbnail, checks |
+| `skills/relayto-web-components` | make that page editable in RELAYTO's web-content editor (component schema, markers, page script, validator) |
 | `skills/relayto-read-published-site` | read and cite a RELAYTO-published site without an account |
-| `skills/relayto-publish-content` | create content from a PDF, link, HTML or post; edit pages and settings; files; forms |
-| `skills/relayto-hubs-and-access` | build and arrange hubs, set privacy, invite people |
-| `skills/relayto-analytics` | read and report content, hub and workspace analytics |
 
 Install them with `npx skills add relayto/relayto-mcp`, or load the whole repository as
 an Agent Plugin (`plugin.json`, `mcp.json`).
