@@ -216,9 +216,13 @@ const plugin = readJson('plugin.json');
 check('plugin.json', plugin, schema('agent-plugins-plugin.schema.1.0.0.json'));
 const mcp = readJson('mcp.json');
 check('mcp.json', mcp, schema('agent-plugins-mcp.schema.1.0.0.json'));
-if (plugin.version !== platform.version) fail('plugin.json', `version ${plugin.version} != servers/mcp/server.json ${platform.version}`);
+// The plugin's version is its own, not the server's: the plugin also carries the skills, and Claude
+// Code updates an installed plugin only when this version changes, so a skills-only change bumps it
+// while servers/mcp/server.json stays. The two plugin manifests always agree.
+const SEMVER = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
+if (!SEMVER.test(plugin.version || '')) fail('plugin.json', `version ${plugin.version} is not semver`);
 const claudePlugin = readJson('.claude-plugin/plugin.json');
-if (claudePlugin.version !== platform.version) fail('.claude-plugin/plugin.json', `version ${claudePlugin.version} != servers/mcp/server.json ${platform.version}`);
+if (claudePlugin.version !== plugin.version) fail('.claude-plugin/plugin.json', `version ${claudePlugin.version} != plugin.json ${plugin.version}`);
 if (claudePlugin.name !== plugin.name) fail('.claude-plugin/plugin.json', `name ${claudePlugin.name} != plugin.json ${plugin.name}`);
 // Homepages: one RELAYTO address everywhere, the entries' websiteUrl (relayto.com/mcp
 // is not a page today).

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "relayto",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "RELAYTO for AI agents: the RELAYTO MCP server plus skills to build hand-made web pages for RELAYTO (editable in its web-content editor, published through the server) and to read any site published on RELAYTO.",
   "author": {
     "name": "RELAYTO",
